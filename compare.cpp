@@ -44,7 +44,7 @@ int main(){
     double j = 1.250000000;
     int agent = 10, a = 10, cnt = 0, ex = 0, runtime_limit = 240000;
     bool flag = false;
-    string file = "ost003d_";
+    string file = "arena_";
     ofstream outfile;
     string write = "";
     switch (ans)
@@ -138,8 +138,8 @@ int main(){
                 while(ex<100){
 
                         
-                        string string1 = "/home/mustafizur/ost003d_pibt_V2/log/"+ file + to_string(a) + "_" + to_string(ex)+ "_0.txt";
-                        string string2 = "/home/mustafizur/ost003d_pibt/log/" + file + to_string(a) + "_" + to_string(ex)+ "_0.txt";
+                        string string1 = "/home/mustafizur/arena_pibt_V2_log/log/"+ file + to_string(a) + "_" + to_string(ex)+ "_0.txt";
+                        string string2 = "/home/mustafizur/arena_pibt_log/log/" + file + to_string(a) + "_" + to_string(ex)+ "_0.txt";
                          
                         bool flag1 = false, flag2 = false,flag3=false;
                         if(exists_test0(string1)){
