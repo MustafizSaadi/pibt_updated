@@ -1,23 +1,23 @@
 ===params of problem setting===
 // choose problem
 // option: { MAPF, MAPF_STATION, MAPD, IMAPF, IMAPF_STATION, I_MAPF_FAIR }
-PROBLEM_TYPE=MAPF
+PROBLEM_TYPE=MAPD
 
 // choose solver
-// option: { PIBT, HCA, WHCA, PPS, CBS, ECBS, iECBS, TP, winPIBT }
-SOLVER_TYPE=PIBT
+// option: { PIBT, PIBT_MAPD, HCA, WHCA, PPS, CBS, ECBS, iECBS, TP, winPIBT }
+SOLVER_TYPE=PIBT_MAPD
 
 // choose map file
-field=./map/8x8.map
+field=./map/warehouse_small.map
 
 // number of agents
-agentnum=10
+agentnum=20
 
 // timestep limitation
 timesteplimit=50000
 
 // number of tasks, for MAPD, IMAPF
-tasknum=500
+tasknum=60
 
 // task frequency for MAPD
 taskfrequency=1
@@ -29,7 +29,7 @@ scenario=0
 scenariofile=./scen/../*.scen
 
 // seed for randomness
-seed=4
+seed=0
 
 //iteration number
 iter=1

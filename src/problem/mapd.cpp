@@ -52,33 +52,45 @@ void MAPD::init() {
 MAPD::~MAPD() {}
 
 bool MAPD::isSolved() {
+  // std::cout << " in solved" << std::endl;
   if (taskCnt >= taskNum && T_OPEN.empty()) {
+    // std::cout << " in condition" << std::endl;
     if (std::all_of(A.begin(), A.end(),
                     [](Agent* a) { return !a->hasTask(); })) {
       return true;
     }
   }
+  // std::cout << " condition not fulfilled" << std::endl;
   return false;
 }
 
 void MAPD::update() {
+  // std::cout << autoAssignment;
   ++timestep;
+  // std::cout << "mapd update" << std::endl;
   updateStatus();
+  // std::cout << "mapd task" << std::endl;
   createTask();
+  // std::cout << "mapd assign" << std::endl;
   if (autoAssignment) autoAssign();
+  // std::cout << "mapd hist" << std::endl;
   for (auto a : A) a->updateHist();
 }
 
 void MAPD::autoAssign() {
   for (auto a : A) {
+    // std:: cout << a->hasTask() << std::endl;
     if (a->hasTask()) continue;
     for (auto tau : T_OPEN) {
+      // std::cout << a->getNode()->getId() << " " << tau->getG()[0]->getId() << std::endl;
       if (a->getNode() == tau->getG()[0]) {
+        // std::cout << a->getId() << " " << a->getNode()->getId() << " in task " << tau->getG()[0]->getId() << std::endl;
         a->setTask(tau);
         if (tau->getG()[0] == a->getNode()) {
           tau->update(a->getNode());
         }
         a->setGoal(tau->getG()[0]);
+        // std::cout << " " << tau->getG()[0]->getId();
         openToClose(tau, T_OPEN, T_CLOSE);
         break;
       }
@@ -89,16 +101,20 @@ void MAPD::autoAssign() {
 void MAPD::updateStatus() {
   // update agent status
   for (auto a : A) {
+    // std::cout << " loop begin" << std::endl;
     if (!a->hasTask()) continue;
+    // std::cout << " before goal test" << std::endl;
     if (a->hasGoal()) {
       if (a->getTask()->getG()[0] == a->getNode()) {
         a->getTask()->update(a->getNode());
       }
     }
+    // std::cout << " before task test" << std::endl;
     if (a->getTask()->completed()) {
       a->getTask()->setEndTime(timestep);
       a->releaseTask();
     }
+    // std::cout << " loop end" << std::endl;
   }
 }
 

@@ -39,6 +39,7 @@ Problem::Problem(Graph* _G,
 
 void Problem::init() {
   timestep = 0;
+  heuristicTime = 0;
 }
 
 Problem::~Problem() {
