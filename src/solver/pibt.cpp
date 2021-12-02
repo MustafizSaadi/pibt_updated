@@ -50,11 +50,11 @@ bool PIBT::solve() {
 
 
 
-  for(auto a:A){
-    // a->path = G->getPath(a->getNode(), a->getGoal());
+  // for(auto a:A){
+  //   // a->path = G->getPath(a->getNode(), a->getGoal());
 
-    cout << a->hasTask() << endl;
-  }
+  //   cout << a->hasTask() << endl;
+  // }
 
   for(int i=0; i < A.size(); i++){
     int conf = 0;
@@ -116,7 +116,7 @@ void PIBT::allocate() {
 
 void PIBT::update() {
   updatePriority();
-  cout << "program is running" << endl;
+  // cout << "program is running" << endl;
 
   std::vector<float> PL(priority.size());  // priority list
   std::copy(priority.begin(), priority.end(), PL.begin());
@@ -247,6 +247,7 @@ bool PIBT::priorityInheritance(Agent* a,
     bool isAgent = false;
     for (auto b : OPEN_AGENT) {
       if (target == b->getNode()) {  // If there is an agent
+        P->pibt_count ++;
         if(b->getGoal()->getId() == b->getNode()->getId()){
           // std::cout << b->getId() << " is pushed by " << a->getId() << std::endl;
         }

@@ -13,6 +13,7 @@
 
 #include "pibt_mapd.h"
 #include <algorithm>
+#include <bits/stdc++.h>
 #include <random>
 #include "../util/util.h"
 
@@ -189,6 +190,13 @@ void PIBT_MAPD::update(bool flag) {
   }
 }
 
+bool PIBT_MAPD::compare(st *a, st *b) {
+  float dista = new_dists(A[a->ind]->getGoal()->getIndex(), A[a->ind]->getNode()->getIndex());
+  float distb = new_dists(A[b->ind]->getGoal()->getIndex(), A[b->ind]->getNode()->getIndex());
+
+  return dista<distb;
+}
+
 void PIBT_MAPD::updatePriority(bool flag) {
   // std::cout<<"updatePriority\n";
   // update priority
@@ -213,6 +221,7 @@ void PIBT_MAPD::updatePriority(bool flag) {
 
     // cout << a->hasTask() << endl;
          }
+  // cout << " before priority" << endl;
 
   for(int i=0; i < A.size(); i++){
     int conf = 0;
@@ -220,9 +229,12 @@ void PIBT_MAPD::updatePriority(bool flag) {
       if(i==j) continue;
       conf += conflict_count(A[i]->path, A[j]->path);
     }
-    // std::cout << i << " " << conf << std::endl;
     priority[i]=conf;
+    // std::cout << i << " " << priority[i] << std::endl;
   }
+  // cout << " after priority" << endl;
+  TieBreak(priority);
+  
   std::chrono::system_clock::time_point en = std::chrono::high_resolution_clock::now();
   P->heuristicTime += std::chrono::duration_cast<std::chrono::milliseconds> (en-st).count();
   }
@@ -232,6 +244,44 @@ void PIBT_MAPD::updatePriority(bool flag) {
       priority[i] = 0;
     }
   }
+}
+
+void PIBT_MAPD::TieBreak(std::vector<float>& priority) {
+  map<float, bool> mp;
+  // cout << " loop begin" << endl;
+  for(int i=0; i<priority.size(); i++) {
+    // cout << i << " " << priority[i] << endl;
+    if(mp.find(priority[i]) == mp.end()){
+      mp[priority[i]] = true;
+      vector<st*> vec;
+      vec.push_back(new st {i, priority[i]});
+      // int cnt = 1;
+      // cout << " loop begin" << endl;
+      for(int j = i+1; j<priority.size(); j++) {
+        if(priority[j] == priority[i]){
+          // cnt ++;
+          // cout << j << " " << priority[j] << endl;
+          vec.push_back(new st {j, priority[j]});
+        }
+      }
+      // cout << " loop end" << endl;
+      if(vec.size() > 1){
+      sort(vec.begin(), vec.end(), [this](st* w1, st* w2){return compare(w1, w2);});
+      //do something
+      float lb = priority[i] - 1;
+      float offset = (float) 1/vec.size();
+      // cout << " loop begin" << endl;
+      for(int l = 0; l < vec.size(); l++) {
+        // cout << vec[l]->conf << endl;
+        priority[vec[l]->ind] = lb + offset*(l+1);
+        // cout << lb << " " << offset << " " << priority[i] << " " << priority[vec[l]->ind] << endl;
+      }
+      // cout << " loop end" << endl;
+    }
+    vec.clear();
+    }
+  }
+  // cout << " loop end" << endl;
 }
 
 float PIBT_MAPD::getDensity(Agent* a) {

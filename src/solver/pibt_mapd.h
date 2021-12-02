@@ -1,7 +1,10 @@
 #pragma once
 
 #include "solver.h"
-
+  struct st {
+    int ind;
+    float conf;
+  };
 
 
 class PIBT_MAPD : public Solver {
@@ -36,6 +39,8 @@ protected:
 
   float getDensity(Agent* a);  // density can be used as effective prioritization
   void printFloyd();
+  bool compare(st *a, st *b);
+  void TieBreak(std::vector<float>& Priority);
   int conflict_count(Nodes p1, Nodes p2); 
   Nodes getShortestPath(Node *v, Node *g);
 public:

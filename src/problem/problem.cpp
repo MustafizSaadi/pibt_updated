@@ -40,6 +40,7 @@ Problem::Problem(Graph* _G,
 void Problem::init() {
   timestep = 0;
   heuristicTime = 0;
+  pibt_count = 0;
 }
 
 Problem::~Problem() {
@@ -56,6 +57,7 @@ void Problem::assign(Task* tau) {
 
 std::string Problem::logStr() {
   std::string tmp = "heuristicTime:" + std::to_string(heuristicTime) + "\n";
+  tmp += "PIBT_Count:" + std::to_string(pibt_count) + "\n";
   tmp += "[problem] timesteplimit:" + std::to_string(timesteplimit) + "\n";
 
   return tmp;
