@@ -16,6 +16,8 @@ Agent::Agent() : id(cntId) {
   tau = nullptr;
   updated = false;
   visitedGoal = false;
+  conf = -1;
+  //std::cout<< "in first init" << std::endl;
 }
 
 Agent::Agent(Node* _v) : id(cntId) {
@@ -24,6 +26,8 @@ Agent::Agent(Node* _v) : id(cntId) {
   tau = nullptr;
   setNode(_v);
   updated = false;
+  conf = -1;
+  //std::cout<< "in second init" << std::endl;
 }
 
 Agent::~Agent() {
@@ -63,6 +67,16 @@ void Agent::releaseTaskOnly() {
 
 void Agent::releaseGoalOnly() {
   g = nullptr;
+}
+
+bool Agent::checkRunning()
+{
+  if(hasGoal()){
+    return getNode() != getGoal();
+  }
+  else {
+    return false;
+  }
 }
 
 std::string Agent::logStr() {

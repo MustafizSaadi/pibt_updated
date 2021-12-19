@@ -44,7 +44,7 @@ int main(){
     double j = 1.250000000;
     int agent = 10, a = 10, cnt = 0, ex = 0, runtime_limit = 240000;
     bool flag = false;
-    string file = "arena_";
+    string file = "warehouse_middle_";
     ofstream outfile;
     string write = "";
     switch (ans)
@@ -201,19 +201,22 @@ int main(){
         break;
 
     case 4:
-        a = 10;
-        while(a<=200){
+        a = 50;
+        while(a<=50){
             double j = 3.000000000;
             cnt = 0;
                 for (size_t i = 0; i < 6; i++)
                 {
                     solncnt[i]=0,runtimecnt[i]=0,lowlevelcnt[i]=0,solncost[i]=0,solnruntime[i]=0,solnlowlevel[i]=0;
                 } 
+                map<int, int> tasks1, tasks2;
+                int maxi = 0;
+                int task_id = -1;
             //while(j<6){
                 // int agent = 10;  
                 // //while(agent<4){
-                    //int ex = 0;
-                    while(ex<100){
+                    int ex = 0;
+                    while(ex<=0){
                         // string string1 = "/home/mustafizur/pibt/log/8by8_agents" + to_string(agent) + "_ex" + to_string(ex) + "_" + to_string(a)+ "_" + to_string(j) + ".txt";
                         // string string2 = "/home/mustafizur/pibt/changed_log/8by8_agents" + to_string(agent) + "_ex" + to_string(ex) + "_" + to_string(a)+ "_" + to_string(j) + ".txt";
                         // string string3 = "/home/mustafizur/pibt/changed_changed_log/8by8_agents" + to_string(agent) + "_ex" + to_string(ex) + "_" + to_string(a)+ "_" + to_string(j) + ".txt";
@@ -224,10 +227,12 @@ int main(){
     
 
 
-                        string string1 = "/home/mustafizur/pibt/log/"+ file + to_string(ex) + "_" + to_string(a)+ "_" + to_string(j) + ".txt";
-                        string string2 = "/home/mustafizur/pibt/changed_log/"+ file + to_string(ex) + "_" + to_string(a)+ "_" + to_string(j) + ".txt";
-                        string string3 = "/home/mustafizur/pibt/changed_changed_log/"+ file + to_string(ex) + "_" + to_string(a)+ "_" + to_string(j) + ".txt";
+                        string string1 = "/home/mustafizur/pibt-master_2/pibt-master_2/log/"+ file + to_string(a) + "_" + to_string(ex)+ "_1" + ".txt";
+                        string string2 = "/home/mustafizur/pibt-master/log/"+ file + to_string(a) + "_" + to_string(ex)+ "_1" + ".txt";
+                        //string string3 = "/home/mustafizur/pibt/changed_changed_log/"+ file + to_string(ex) + "_" + to_string(a)+ "_" + to_string(j) + ".txt";
 
+                        cout << string1 << endl;
+                        cout << string2 << endl;
                         bool flag1 = false, flag2 = false,flag3=false;
                         if(exists_test0(string1)){
                             flag1 = true;
@@ -235,33 +240,39 @@ int main(){
                         if(exists_test0(string2)){
                             flag2 = true;
                         }
-                        if(exists_test0(string3)){
-                            flag3 = true;
-                        }
-                        if(flag1 && flag2 && flag3){
+                        
+                        if(flag1 && flag2 ){
                             cnt++;
                             ifstream in1(string1);
                             ifstream in2(string2);
-                            ifstream in3(string3);
+                            
                             string data;
                             while(getline(in1,data)){
                                 stringstream check1(data);
                                 string intermediate;
                                 getline(check1,intermediate,':');
-                                if(intermediate == "[solver] Lowlevelnode"){
-                                    getline(check1,intermediate,':');
-                                    lowlevelcnt[0] = atoi(intermediate.c_str());   
-                                    //cout << lowlevelcnt[0] <<endl;
-                                }
-                                else if(intermediate == "[solver] elapsed"){
+                                if(intermediate == "[solver] elapsed"){
                                     getline(check1,intermediate,':');
                                     runtimecnt[0] = atoi(intermediate.c_str());   
                                     //cout << runtimecnt[0] <<endl;
                                 }
-                                else if(intermediate == "SolutionCost"){
+                                else if(intermediate == "[solver] makespan"){
                                     getline(check1,intermediate,':');
                                     solncnt[0] = atoi(intermediate.c_str());
                                     //cout << solncnt[0] <<endl;
+                                }
+                                else if(intermediate == "[task] id"){
+                                    getline(check1,intermediate,',');
+                                    int t_id = atoi(intermediate.c_str());
+                                    while(getline(check1,intermediate,',')){
+                                        string intermediate2;
+                                        getline(check1, intermediate2, ':');
+                                        if(intermediate2 == "service time"){
+                                            getline(check1, intermediate2, ':');
+                                            tasks1[t_id] = atoi(intermediate2.c_str());
+                                            //cout << t_id << " " << atoi(intermediate2.c_str()) << endl;
+                                        }
+                                    }
                                 }
                             }
                         
@@ -269,94 +280,34 @@ int main(){
                                 stringstream check1(data);
                                 string intermediate;
                                 getline(check1,intermediate,':');
-                                if(intermediate == "[solver] Lowlevelnode"){
+                                if(intermediate == "[solver] elapsed"){
                                     getline(check1,intermediate,':');
-                                    lowlevelcnt[1] = atoi(intermediate.c_str());  
-                                    //cout << lowlevelcnt[1] <<endl; 
+                                    runtimecnt[0] = atoi(intermediate.c_str());   
+                                    //cout << runtimecnt[0] <<endl;
                                 }
-                                else if(intermediate == "[solver] elapsed"){
+                                else if(intermediate == "[solver] makespan"){
                                     getline(check1,intermediate,':');
-                                    runtimecnt[1] = atoi(intermediate.c_str());   
-                                    //cout << runtimecnt[1] <<endl;
+                                    solncnt[0] = atoi(intermediate.c_str());
+                                    //cout << solncnt[0] <<endl;
                                 }
-                                else if(intermediate == "SolutionCost"){
-                                    getline(check1,intermediate,':');
-                                    solncnt[1] = atoi(intermediate.c_str());
-                                    //cout << solncnt[1] <<endl;
-                                }
-                            }
-
-                            while(getline(in3,data)){
-                                stringstream check1(data);
-                                string intermediate;
-                                getline(check1,intermediate,':');
-                                if(intermediate == "[solver] Lowlevelnode"){
-                                    getline(check1,intermediate,':');
-                                    lowlevelcnt[2] = atoi(intermediate.c_str()); 
-                                    //cout << lowlevelcnt[2] <<endl;  
-                                }
-                                else if(intermediate == "[solver] elapsed"){
-                                    getline(check1,intermediate,':');
-                                    runtimecnt[2] = atoi(intermediate.c_str());   
-                                    //cout<< runtimecnt[2] <<endl;
-                                }
-                                else if(intermediate == "SolutionCost"){
-                                    getline(check1,intermediate,':');
-                                    solncnt[2] = atoi(intermediate.c_str());
-                                    //cout << solncnt[2]<<endl;
+                                else if(intermediate == "[task] id"){
+                                    getline(check1,intermediate,',');
+                                    int t_id = atoi(intermediate.c_str());
+                                    while(getline(check1,intermediate,',')){
+                                        string intermediate2;
+                                        getline(check1, intermediate2, ':');
+                                        if(intermediate2 == "service time"){
+                                            getline(check1, intermediate2, ':');
+                                            tasks2[t_id] = atoi(intermediate2.c_str());
+                                            //cout << t_id << " " << atoi(intermediate2.c_str()) << endl;
+                                        }
+                                    }
                                 }
                             }
-
-
-                            if(lowlevelcnt[0]>lowlevelcnt[2])
-                                solnlowlevel[4] ++; // ecbs_2 better than ecbs
-                            else if(lowlevelcnt[0]<lowlevelcnt[2])
-                                solnlowlevel[0] ++; // ecbs better than ecbs_2
-
-                            
-                            if(lowlevelcnt[1]>lowlevelcnt[2])
-                                solnlowlevel[5] ++; // ecbs_2 better than ecbs_1
-                            else if(lowlevelcnt[1]<lowlevelcnt[2])
-                                solnlowlevel[3] ++; // ecbs_1 better than ecbs_2
-
-                            if(lowlevelcnt[0]>lowlevelcnt[1])
-                                solnlowlevel[2] ++; // ecbs_1 better than ecbs
-                            else if(lowlevelcnt[0]<lowlevelcnt[1])
-                                solnlowlevel[1] ++; // ecbs better than ecbs_1
-
-                    
-                            if(runtimecnt[0]>runtimecnt[2])
-                                solnruntime[4] ++; // ecbs_2 better than ecbs
-                            else if(runtimecnt[0]<runtimecnt[2])
-                                solnruntime[0] ++; // ecbs better than ecbs_2
-
-                            
-                            if(runtimecnt[1]>runtimecnt[2])
-                                solnruntime[5] ++; // ecbs_2 better than ecbs_1
-                            else if(runtimecnt[1]<runtimecnt[2])
-                                solnruntime[3] ++; // ecbs_1 better than ecbs_2
-
-                            if(runtimecnt[0]>runtimecnt[1])
-                                solnruntime[2] ++; // ecbs_1 better than ecbs
-                            else if(runtimecnt[0]<runtimecnt[1])
-                                solnruntime[1] ++; // ecbs better than ecbs_1
 
                         
-                            if(solncnt[0]>solncnt[2])
-                                solncost[4] ++; // ecbs_2 better than ecbs
-                            else if(solncnt[0]<solncnt[2])
-                                solncost[0] ++; // ecbs better than ecbs_2
 
                             
-                            if(solncnt[1]>solncnt[2])
-                                solncost[5] ++; // ecbs_2 better than ecbs_1
-                            else if(solncnt[1]<solncnt[2])
-                                solncost[3] ++; // ecbs_1 better than ecbs_2
-
-                            if(solncnt[0]>solncnt[1])
-                                solncost[2] ++; // ecbs_1 better than ecbs
-                            else if(solncnt[0]<solncnt[1])
-                                solncost[1] ++; // ecbs better than ecbs_1
 
                         }
                         ex += 1;
@@ -367,25 +318,24 @@ int main(){
 
                 // j += 1;
                 // }
+            map<int, int> :: iterator it1;
+            for(it1 = tasks1.begin(); it1 != tasks1.end(); it1++) {
+                if(tasks2.find(it1->first) != tasks2.end()){
+                    if(it1->second-tasks2[it1->first] > maxi){
+                        maxi = it1->second-tasks2[it1->first];
+                        task_id = it1->first;
+                    }
+                    if(it1->second > tasks2[it1->first])
+                        cnt1 ++;
+                    else if(it1->second < tasks2[it1->first])
+                        cnt2 ++;
+                    else 
+                        cnt3 ++;
+                }
+            }
+            cout << cnt1 << " " << cnt2 << " " << cnt3 << endl;
 
-            cout<< "agent = " << a <<" instances = "  <<  cnt<<endl;  
-            cout << "ecbs > ecbs2   ecbs > ecbs1    ecbs1 > ecbs   ecbs1 > ecbs2    ecbs2 > ecbs    ecbs2 > ecbs1" << endl;   
-            cout<<"LowLevel: "<<endl;
-            for (size_t i = 0; i < 6; i++)
-            {
-                cout << (solnlowlevel[i]/cnt)*100<< " ";
-            }
-            cout<<endl<<"runitme: "<<endl;
-            for (size_t i = 0; i < 6; i++)
-            {
-                cout << (solnruntime[i]/cnt)*100<< " ";
-            }
-            cout<<endl<<"Cost: "<<endl;
-            for (size_t i = 0; i < 6; i++)
-            {
-                cout << (solncost[i]/cnt)*100<< " ";
-            }
-            cout << endl;
+            cout << task_id << endl;
             a += 10;
         }
 

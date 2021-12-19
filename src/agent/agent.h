@@ -46,6 +46,7 @@ public:
   void releaseTask();
   void releaseTaskOnly();
   void releaseGoalOnly();
+  bool checkRunning();
 
   void setGoal(Node* _g) { g = _g; }
   Node* getGoal() { return g; }
@@ -61,6 +62,11 @@ public:
 
   void updateHist();
   std::vector<AgentStatus*> getHist() { return hist; }
+  // std::map<float, std::pair<int, int> > mp;
+
+  std::vector<std::map<float, std:: pair <int, std::pair<int, int>> >> pibt_data;
+  int conf; // store current conflict count
+  int goal_count;
 
   std::string logStr();
 

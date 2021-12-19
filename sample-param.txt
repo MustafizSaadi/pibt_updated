@@ -8,16 +8,16 @@ PROBLEM_TYPE=MAPD
 SOLVER_TYPE=PIBT_MAPD
 
 // choose map file
-field=./map/warehouse_middle.map
+field=./map/warehouse_small.map
 
 // number of agents
-agentnum=50
+agentnum=20
 
 // timestep limitation
 timesteplimit=50000
 
 // number of tasks, for MAPD, IMAPF
-tasknum=500
+tasknum=200
 
 // task frequency for MAPD
 taskfrequency=10
@@ -29,7 +29,7 @@ scenario=0
 scenariofile=./scen/../*.scen
 
 // seed for randomness
-seed=0
+seed=10
 
 //iteration number
 iter=1
