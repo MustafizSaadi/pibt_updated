@@ -240,6 +240,7 @@ bool PIBT::priorityInheritance(Agent* a,
     bool isAgent = false;
     for (auto b : OPEN_AGENT) {
       if (target == b->getNode()) {  // If there is an agent
+      P->pibt_count ++;
         if(b->getGoal()->getId() == b->getNode()->getId()){
           // std::cout << b->getId() << " is pushed by " << a->getId() << std::endl;
         }
