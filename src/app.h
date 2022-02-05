@@ -142,7 +142,7 @@ Problem* run(int argc, char *argv[])
   }
 
   std :: string input_file;
-  int st = envConfig->field.find("8");
+  int st = envConfig->field.find("o");
   int en = envConfig->field.find(".map");
   input_file = envConfig->field.substr(st,en-st) + "_" + to_string(envConfig->agentnum) + "_" +to_string(envConfig->seed)+ "_" + to_string(envConfig->iter) ;
 

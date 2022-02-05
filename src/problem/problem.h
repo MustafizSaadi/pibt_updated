@@ -49,6 +49,7 @@ public:
   bool visual_showicon;
   std::string visual_icon;
   int heuristicTime;
+  int pibt_count;
 
   virtual std::string logStr();
 };
