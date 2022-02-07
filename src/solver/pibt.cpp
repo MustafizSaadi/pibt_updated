@@ -36,9 +36,13 @@ void PIBT::init() {
 bool PIBT::solve() {
   solveStart();
 
+  cout << "program started" << endl;
+
   // int nodeNum = G->getNodesNum();
   // initialize priroirty
   int agentNum = A.size();
+
+  cout << A.size() << endl;
 
   /*Update*/
 
@@ -46,9 +50,11 @@ bool PIBT::solve() {
 
 
 
-  for(auto a:A){
-    a->path = G->getPath(a->getNode(), a->getGoal());
-  }
+  // for(auto a:A){
+  //   // a->path = G->getPath(a->getNode(), a->getGoal());
+
+  //   cout << a->hasTask() << endl;
+  // }
 
   for(int i=0; i < A.size(); i++){
     int conf = 0;
@@ -110,6 +116,7 @@ void PIBT::allocate() {
 
 void PIBT::update() {
   updatePriority();
+  // cout << "program is running" << endl;
 
   std::vector<float> PL(priority.size());  // priority list
   std::copy(priority.begin(), priority.end(), PL.begin());
@@ -158,7 +165,7 @@ void PIBT::updatePriority() {
     // priority[i] = getDensity(A[i]);
     //std::cout<<A[i]->getNode()->getId()<<"\n";
 
-    /* update */
+    // /* update */
     if(A[i]->getNode() == A[i]->getGoal())
       priority[i] = 0;
   }

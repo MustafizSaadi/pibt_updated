@@ -24,6 +24,7 @@ namespace Param {
                      S_PPS,
                      S_TP,
                      S_PIBT,
+                     S_PIBT_MAPD,
                      S_winPIBT };
 
   // params of problem setting
@@ -74,6 +75,7 @@ void setParams(std::string filename,
                Param::SolverConfig* solver,
                Param::VisualConfig* visual)
 {
+  std::cout << " start params";
   // file open
   std::ifstream file(filename);
   if (!file) {
@@ -149,7 +151,10 @@ void setParams(std::string filename,
         env->STYPE = Param::SOLVER_TYPE::S_TP;
       } else if (tmpstr == "PIBT") {
         env->STYPE = Param::SOLVER_TYPE::S_PIBT;
-      } else if (tmpstr == "winPIBT") {
+      } else if(tmpstr == "PIBT_MAPD") {
+        env->STYPE = Param::SOLVER_TYPE::S_PIBT_MAPD;
+      }
+        else if (tmpstr == "winPIBT") {
         env->STYPE = Param::SOLVER_TYPE::S_winPIBT;
       } else {
         std::cout << "error@setParams, solver type "

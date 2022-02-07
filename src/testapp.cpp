@@ -33,6 +33,7 @@ int main(int argc, char *argv[])
 {
   
   // start = clock();
+  std::cout<<"time_taken\n";
   
   run(argc, argv);
   

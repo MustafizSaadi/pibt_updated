@@ -21,6 +21,7 @@
 #include "problem/imapf_fair.h"
 
 #include "solver/pibt.h"
+#include "solver/pibt_mapd.h"
 #include "solver/winpibt.h"
 #include "solver/cbs.h"
 #include "solver/ecbs.h"
@@ -141,12 +142,14 @@ Problem* run(int argc, char *argv[])
     std::exit(1);
   }
 
+  std::cout<< "before"<<std::endl;
+
   std :: string input_file;
-  int st = envConfig->field.find("o");
-  int en = envConfig->field.find(".map");
-  input_file = envConfig->field.substr(st,en-st) + "_" + to_string(envConfig->agentnum) + "_" +to_string(envConfig->seed)+ "_" + to_string(envConfig->iter) ;
+  std :: string map = envConfig->field.substr(6, envConfig->field.size()-6);
+  int en = map.find(".map");
+  input_file = map.substr(0,en) + "_" + to_string(envConfig->agentnum) + "_" +to_string(envConfig->seed)+ "_" + to_string(envConfig->iter) ;
 
-
+  std::cout<< "after"<<std::endl;
   /************************
    * agent definition
    ************************/
@@ -248,6 +251,9 @@ Problem* run(int argc, char *argv[])
     break;
   case Param::SOLVER_TYPE::S_PIBT:
     solver = new PIBT(P, MT_S);
+    break;
+  case Param::SOLVER_TYPE::S_PIBT_MAPD:
+    solver = new PIBT_MAPD(P, MT_S);
     break;
   case Param::SOLVER_TYPE::S_winPIBT:
     solver = new winPIBT(P, solverConfig->window,
