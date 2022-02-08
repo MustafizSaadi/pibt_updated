@@ -145,9 +145,9 @@ Problem* run(int argc, char *argv[])
   std::cout<< "before"<<std::endl;
 
   std :: string input_file;
-  int st = envConfig->field.find("w");
-  int en = envConfig->field.find(".map");
-  input_file = envConfig->field.substr(st,en-st) + "_" + to_string(envConfig->agentnum) + "_" +to_string(envConfig->seed)+ "_" + to_string(envConfig->iter) ;
+  std :: string map = envConfig->field.substr(6, envConfig->field.size()-6);
+  int en = map.find(".map");
+  input_file = map.substr(0,en) + "_" + to_string(envConfig->agentnum) + "_" +to_string(envConfig->seed)+ "_" + to_string(envConfig->iter) ;
 
   std::cout<< "after"<<std::endl;
   /************************
