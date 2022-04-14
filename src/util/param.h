@@ -36,6 +36,7 @@ namespace Param {
     int timesteplimit;
     int tasknum;
     float taskfrequency;
+    int numOfTaskForPriorityUpdate;
     bool scenario;
     std::string scenariofile;
     int seed;  // seed
@@ -93,6 +94,7 @@ void setParams(std::string filename,
   std::regex r_timesteplimit = std::regex(R"(timesteplimit=(\d+))");
   std::regex r_tasknum = std::regex(R"(tasknum=(\d+))");
   std::regex r_taskfrequency = std::regex(R"(taskfrequency=(\d+[\.]?\d*))");
+  std::regex r_numOfTaskForPriorityUpdate = std::regex(R"(numOfTaskForPriorityUpdate=(\d+))");
   std::regex r_scenario = std::regex(R"(scenario=(\d+))");
   std::regex r_scenariofile = std::regex(R"(scenariofile=(.+))");
   std::regex r_seed = std::regex(R"(seed=(\d+))");
@@ -176,6 +178,8 @@ void setParams(std::string filename,
       env->tasknum = std::stoi(results[1].str());
     } else if (std::regex_match(line, results, r_taskfrequency)) {
       env->taskfrequency = std::stof(results[1].str());
+    } else if (std::regex_match(line, results, r_numOfTaskForPriorityUpdate)) {
+      env->numOfTaskForPriorityUpdate = std::stoi(results[1].str());
     } else if (std::regex_match(line, results, r_scenario)) {
       env->scenario = std::stoi(results[1].str());
     } else if (std::regex_match(line, results, r_scenariofile)) {

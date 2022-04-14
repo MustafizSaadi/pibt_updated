@@ -18,17 +18,15 @@
 
 using namespace std;
 
-PIBT_MAPD::PIBT_MAPD(Problem *_P) : Solver(_P)
+PIBT_MAPD::PIBT_MAPD(Problem *_P, std::mt19937 *_MT, int windowSize) : Solver(_P, _MT)
 {
-  init();
-}
-PIBT_MAPD::PIBT_MAPD(Problem *_P, std::mt19937 *_MT) : Solver(_P, _MT)
-{
+  this->windowSize = windowSize;
   init();
 }
 PIBT_MAPD::~PIBT_MAPD() {}
 void PIBT_MAPD::init()
 {
+  taskUpdateCounter = 0;
   G->setRegFlg(true);
 }
 
@@ -159,8 +157,13 @@ bool PIBT_MAPD::allocate()
       //a->conf = -1;
 
       a->goal_count++;
+      taskUpdateCounter ++;
 
-      flag = true;
+      if(taskUpdateCounter == windowSize){
+        flag = true;
+        taskUpdateCounter = 0;
+      }
+      
       //cout << a->getId() << endl;
     }
   }

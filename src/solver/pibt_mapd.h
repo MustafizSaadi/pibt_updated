@@ -51,9 +51,10 @@ protected:
   void TieBreak(std::vector<float>& Priority);
   int conflict_count(Nodes p1, Nodes p2); 
   Nodes getShortestPath(Node *v, Node *g);
+  int windowSize;
+  int taskUpdateCounter;
 public:
-  PIBT_MAPD(Problem* _P);
-  PIBT_MAPD(Problem* _P, std::mt19937* _MT);
+  PIBT_MAPD(Problem* _P, std::mt19937* _MT, int windowSize);
   ~PIBT_MAPD();
 
   bool solve();

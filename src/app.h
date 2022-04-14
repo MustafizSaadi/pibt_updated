@@ -77,6 +77,7 @@ Problem* run(int argc, char *argv[])
      10000,            // timesteplimit
      10,               // task number
      0.1,              // task frequency
+     10,               // number Of Task For Priority Update
      false,            // scenario
      "",               // scenario file
      0,                // seed
@@ -101,6 +102,7 @@ Problem* run(int argc, char *argv[])
   /************************
    * load setting
    ************************/
+  std::cout << "reading params" << "\n";
   setParams(configfile, envConfig, solverConfig, visualConfig);
 
 #ifdef OF
@@ -253,7 +255,7 @@ Problem* run(int argc, char *argv[])
     solver = new PIBT(P, MT_S);
     break;
   case Param::SOLVER_TYPE::S_PIBT_MAPD:
-    solver = new PIBT_MAPD(P, MT_S);
+    solver = new PIBT_MAPD(P, MT_S, envConfig->numOfTaskForPriorityUpdate);
     break;
   case Param::SOLVER_TYPE::S_winPIBT:
     solver = new winPIBT(P, solverConfig->window,
