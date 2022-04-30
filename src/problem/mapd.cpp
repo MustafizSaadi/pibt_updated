@@ -86,9 +86,10 @@ void MAPD::autoAssign() {
       if (a->getNode() == tau->getG()[0]) {
         // std::cout << a->getId() << " " << a->getNode()->getId() << " in task " << tau->getG()[0]->getId() << std::endl;
         a->setTask(tau);
-        if (tau->getG()[0] == a->getNode()) {
-          tau->update(a->getNode());
-        }
+        tau->update(a->getNode());
+        // if (tau->getG()[0] == a->getNode()) {
+        //   tau->update(a->getNode());
+        // }
         a->setGoal(tau->getG()[0]);
         // std::cout << " " << tau->getG()[0]->getId();
         openToClose(tau, T_OPEN, T_CLOSE);

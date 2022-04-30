@@ -29,6 +29,7 @@ Task::Task(int t) : id(cntId) {  // for mapd
   ++cntId;
   startTime = t;
   endTime = 0;
+  assigned = false;
 }
 
 Task::Task(Node* v, int t) : id(cntId) {
@@ -54,6 +55,14 @@ void Task::update(Node* g) {
 
 bool Task::completed() {
   return G_OPEN.empty();
+}
+
+bool Task::getAssigned(){
+  return assigned;
+}
+
+void Task::setAssigned(){
+  assigned = true;
 }
 
 void Task::setEndTime(int t) {

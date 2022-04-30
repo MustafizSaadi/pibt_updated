@@ -92,7 +92,7 @@ bool PIBT_MAPD::solve()
     //   if(!a->hasTask())
     //     cout << a->getId() << endl;
     // }
-    // cout << "before allocate";
+    //cout << "before allocate";
     bool flag = allocate();
     // cout << " checking new tasks " << flag << endl;
     // cout << " Task checking stopped" << endl;
@@ -133,37 +133,102 @@ bool PIBT_MAPD::allocate()
   auto T = P->getT();
   Graph *_G = G;
 
-  for (auto a : A)
+  if (T.empty())
   {
-    if (a->hasTask()){
-      if(a->getTask()->getId() == 243)
-        cout << a->getId() << endl;
-      continue;
-    }
-    if (T.empty())
-    {
+    //cout << "all tasks are reached" << endl;
+    for (auto a : A)
+    { 
+      if(a->hasTask()) continue;
       a->releaseGoalOnly();
-      // std::cout << "goal released " << a->getId() << " " << std::endl;
-    }
-    else
-    {
-      auto v = a->getNode();
-      auto itr = std::min_element(T.begin(), T.end(),
-                                  [v, _G](Task *t1, Task *t2)
-                                  {
-                                    return _G->dist(t1->getG()[0], v) < _G->dist(t2->getG()[0], v);
-                                  });
-      a->setGoal((*itr)->getG()[0]);
-      // map<float, pair<int, pair<int, int>>> mp;
-      // a->pibt_data.push_back(mp);
-      //a->conf = -1;
-
-      a->goal_count++;
-
-      flag = true;
-      //cout << a->getId() << endl;
     }
   }
+  else
+  {
+    // vector<Task *> unAssignedTasks;
+    // map<Task*, Agent*> taskAgentMap;
+    // map<Agent*, Task*> agentTaskMap;
+
+    for (auto t : T)
+    {
+      auto itr = std::min_element(A.begin(), A.end(),
+                                  [t, _G](Agent *a1, Agent *a2)
+                                  {
+                                    if (!a1->hasTask() && !a2->hasTask())
+                                      return _G->dist(t->getG()[0], a1->getNode()) < _G->dist(t->getG()[0], a2->getNode());
+                                    else if (a1->hasTask() && !a2->hasTask())
+                                      return false;
+                                    else
+                                      return true;
+                                  });
+
+      if (!(*itr)->hasTask() && (!(*itr)->hasGoal() || (*itr)->getGoal() != t->getG()[0]))
+      {
+        // if((*itr)->hasGoal() && (*itr)->getGoal() != t->getG()[0]){
+        //   Task* tempTask = agentTaskMap[*itr];
+        //   taskAgentMap[tempTask] = nullptr;
+        // }
+        (*itr)->setGoal(t->getG()[0]);
+        (*itr)->goal_count++;
+        flag = true;
+        // taskAgentMap[t] = *itr;
+        // agentTaskMap[*itr] = t;
+      }
+      // else if((*itr)->hasTask()){
+      //   taskAgentMap[(*itr)->getTask()] = *itr;
+      // }
+      // else
+      //   taskAgentMap[t] = nullptr;
+      //cout << T.size() << endl;
+    }
+
+    // for(auto t : T){
+    //   if(taskAgentMap[t] == nullptr)
+    //     unAssignedTasks.push_back(t);
+    // }
+
+    // for (auto a : A)
+    // {
+    //   if (!a->hasGoal())
+    //   {
+    //     cout << unAssignedTasks.size() << endl;
+    //     Task *t = randomChoose(unAssignedTasks, MT);
+    //     a->setGoal(a->getNode());
+    //   }
+    // }
+  }
+
+  // for (auto a : A)
+  // {
+  //   if (a->hasTask()){
+  //     if(a->getTask()->getId() == 243)
+  //       cout << a->getId() << endl;
+  //     continue;
+  //   }
+  //   if (T.empty())
+  //   {
+  //     a->releaseGoalOnly();
+  //     // std::cout << "goal released " << a->getId() << " " << std::endl;
+  //   }
+  //   else
+  //   {
+  //     auto v = a->getNode();
+  //     auto itr = std::min_element(T.begin(), T.end(),
+  //                                 [v, _G](Task *t1, Task *t2)
+  //                                 {
+  //                                   return _G->dist(t1->getG()[0], v) < _G->dist(t2->getG()[0], v);
+  //                                 });
+  // this need to be modified
+  //     a->setGoal((*itr)->getG()[0]);
+  //     // map<float, pair<int, pair<int, int>>> mp;
+  //     // a->pibt_data.push_back(mp);
+  //     //a->conf = -1;
+
+  //     a->goal_count++;
+
+  //     flag = true;
+  //     //cout << a->getId() << endl;
+  //   }
+  // }
 
   return flag;
 }
@@ -223,7 +288,7 @@ void PIBT_MAPD::update(bool flag)
     std::chrono::system_clock::time_point st = std::chrono::high_resolution_clock::now();
 
     itr = std::max_element(PL.begin(), PL.end(), [this](value_for_priority a, value_for_priority b)
-                              { return max_compare(a, b); });
+                           { return max_compare(a, b); });
 
     std::chrono::system_clock::time_point en = std::chrono::high_resolution_clock::now();
     P->heuristicTime += std::chrono::duration_cast<std::chrono::milliseconds>(en - st).count();
@@ -245,22 +310,26 @@ bool PIBT_MAPD::compare(st *a, st *b)
 
 bool PIBT_MAPD::max_compare(value_for_priority a, value_for_priority b)
 {
-  if(a.is_in_goal && b.is_in_goal) return true;
-  else if (a.is_in_goal || b.is_in_goal) {
+  if (a.is_in_goal && b.is_in_goal)
+    return true;
+  else if (a.is_in_goal || b.is_in_goal)
+  {
     return b.is_in_goal;
   }
-  else {
-    if(a.task == b.task) {
-      if(a.conf == b.conf)
+  else
+  {
+    if (a.task == b.task)
+    {
+      if (a.conf == b.conf)
         return a.goal_distance > b.goal_distance;
       else
         return a.conf < b.conf;
     }
-    else {
+    else
+    {
       return a.task > b.task;
     }
   }
-  
 }
 
 void PIBT_MAPD::updatePriority(bool flag)
@@ -286,26 +355,27 @@ void PIBT_MAPD::updatePriority(bool flag)
     std::chrono::system_clock::time_point st = std::chrono::high_resolution_clock::now();
     for (auto a : A)
     {
-      a->path = getShortestPath(a->getNode(), a->getGoal());
+      if(a->hasGoal())
+        a->path = getShortestPath(a->getNode(), a->getGoal());
 
-      // cout << a->hasTask() << endl;
+      //cout << a->hasTask() << endl;
     }
-    // cout << " before priority" << endl;
+    //cout << " before priority" << endl;
 
     for (int i = 0; i < A.size(); i++)
     {
       int conf = 0;
+      if(! A[i]->hasGoal()) continue;
       for (int j = 0; j < A.size(); j++)
       {
-        if (i == j)
+        if (i == j || !A[j]->hasGoal())
           continue;
         conf += conflict_count(A[i]->path, A[j]->path);
       }
       // bool flag = A[i]->checkRunning();
       // priority[i] = value_for_priority{A[i]->goal_count, flag == true ? (float)conf : 0, !flag};
 
-      
-      priority[i] = value_for_priority{A[i]->goal_count, (float)conf, A[i]->checkRunning(), (int) A[i]->path.size()};
+      priority[i] = value_for_priority{A[i]->goal_count, (float)conf, A[i]->checkRunning(), (int)A[i]->path.size()};
 
       // if(A[i]->conf < 0)
       //   A[i]->pibt_data[A[i]->pibt_data.size()-1][conf] = {0, {0, 0}};
@@ -327,7 +397,7 @@ void PIBT_MAPD::updatePriority(bool flag)
   {
     for (int i = 0; i < A.size(); i++)
     {
-      if (A[i]->getNode() == A[i]->getGoal())
+      if (!A[i]->hasGoal() || A[i]->getNode() == A[i]->getGoal())
       {
         //cout << "negative assigned" << endl;
         priority[i] = value_for_priority{A[i]->goal_count, 0, true, 0};
@@ -474,7 +544,7 @@ bool PIBT_MAPD::priorityInheritance(Agent *a,
       { // If there is an agent
         // a->pibt_data[a->pibt_data.size() - 1][a->conf].second.first++;
         // b->pibt_data[b->pibt_data.size() - 1][b->conf].second.second++;
-        P->pibt_count ++;
+        P->pibt_count++;
         // if(b->getGoal()->getId() == b->getNode()->getId()){
         //   // std::cout << b->getId() << " is pushed by " << a->getId() << std::endl;
         // }

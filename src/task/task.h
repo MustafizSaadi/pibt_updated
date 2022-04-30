@@ -14,6 +14,7 @@ private:
 
   int startTime;  // timestep
   int endTime;
+  bool assigned;
 
 public:
   Task();
@@ -35,6 +36,11 @@ public:
   void update(Node* v);
 
   bool completed();
+
+  bool getAssigned();
+
+  void setAssigned();
+  
   void setEndTime(int t);
 
   std::string logStr();
