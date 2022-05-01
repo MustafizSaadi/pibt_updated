@@ -48,7 +48,6 @@ protected:
   void printFloyd();
   bool compare(st *a, st *b);
   bool max_compare(value_for_priority a, value_for_priority b);
-  void TieBreak(std::vector<float>& Priority);
   int conflict_count(Nodes p1, Nodes p2); 
   Nodes getShortestPath(Node *v, Node *g);
 public:

@@ -36,38 +36,12 @@ bool PIBT_MAPD::solve()
 {
   solveStart();
 
-  cout << "program started" << endl;
-
-  // int nodeNum = G->getNodesNum();
   // initialize priroirty
   int agentNum = A.size();
 
   cout << A.size() << endl;
 
-  /*Update*/
-
-  // for(auto a:A){
-  //   // a->path = G->getPath(a->getNode(), a->getGoal());
-
-  //   cout << a->hasTask() << endl;
-  // }
-
-  // for(int i=0; i < A.size(); i++){
-  //   int conf = 0;
-  //   for(int j=0; j<A.size(); j++){
-  //     if(i==j) continue;
-  //     conf += conflict_count(A[i]->path, A[j]->path);
-  //   }
-  //   // std::cout << i << " " << conf << std::endl;
-  //   priority.push_back(conf);
-  // }
-
-  // std::chrono::system_clock::time_point en = std::chrono::high_resolution_clock::now();
-
-  // P->heuristicTime = std::chrono::duration_cast<std::chrono::milliseconds>
-  //   (en-st).count();
-
-  /*Update*/
+  // since, initially no agent has any task or path, it is not possible to prioritize based on conflict count
 
   for (int i = 0; i < agentNum; ++i)
   {
@@ -78,47 +52,20 @@ bool PIBT_MAPD::solve()
     A[i]->goal_count = 0;
   }
 
-  // cout << " checking new tasks" << endl;
-  // for(auto a:A) {
-  //   if(a->hasTask())
-  //     cout << a->getId() << endl;
-  // }
-  // cout << " Task checking stopped" << endl;
 
   while (!P->isSolved())
   {
-    // cout << " Task checking started" << endl;
-    // for(auto a:A) {
-    //   if(!a->hasTask())
-    //     cout << a->getId() << endl;
-    // }
     //cout << "before allocate";
     bool flag = allocate();
-    // cout << " checking new tasks " << flag << endl;
-    // cout << " Task checking stopped" << endl;
     // cout << "before update" << endl;
     update(flag);
     // cout << "before P->update" << endl;
     P->update();
     if (P->getTimestep() >= P->getTimestepLimit())
     {
-      // cout << "break" << endl;
       break;
     }
   }
-  // ofstream output;
-  // output.open("data.txt");
-  // for (auto a : A)
-  // {
-  //   for (int i = 0; i < a->pibt_data.size(); i++)
-  //   {
-  //     map<float, pair<int, pair<int, int>>>::iterator it;
-  //     for (it = a->pibt_data[i].begin(); it != a->pibt_data[i].end(); it++)
-  //     {
-  //       output << "Agent " << a->getId() << " in task " << i << " found conflicts " << it->first << " order " << it->second.first << " in doing so pushes " << it->second.second.first << " and pushed by " << it->second.second.second << endl;
-  //     }
-  //   }
-  // }
 
   solveEnd();
   return true;
@@ -126,16 +73,16 @@ bool PIBT_MAPD::solve()
 
 bool PIBT_MAPD::allocate()
 {
-  // cout << P->allocated() << endl;
   bool flag = false;
   if (P->allocated())
     return flag;
   auto T = P->getT();
   Graph *_G = G;
 
+  // start of modified allocate method
+
   if (T.empty())
   {
-    //cout << "all tasks are reached" << endl;
     for (auto a : A)
     { 
       if(a->hasTask()) continue;
@@ -144,10 +91,6 @@ bool PIBT_MAPD::allocate()
   }
   else
   {
-    // vector<Task *> unAssignedTasks;
-    // map<Task*, Agent*> taskAgentMap;
-    // map<Agent*, Task*> agentTaskMap;
-
     for (auto t : T)
     {
       auto itr = std::min_element(A.begin(), A.end(),
@@ -163,80 +106,20 @@ bool PIBT_MAPD::allocate()
 
       if (!(*itr)->hasTask() && (!(*itr)->hasGoal() || (*itr)->getGoal() != t->getG()[0]))
       {
-        // if((*itr)->hasGoal() && (*itr)->getGoal() != t->getG()[0]){
-        //   Task* tempTask = agentTaskMap[*itr];
-        //   taskAgentMap[tempTask] = nullptr;
-        // }
         (*itr)->setGoal(t->getG()[0]);
         (*itr)->goal_count++;
         flag = true;
-        // taskAgentMap[t] = *itr;
-        // agentTaskMap[*itr] = t;
       }
-      // else if((*itr)->hasTask()){
-      //   taskAgentMap[(*itr)->getTask()] = *itr;
-      // }
-      // else
-      //   taskAgentMap[t] = nullptr;
-      //cout << T.size() << endl;
     }
-
-    // for(auto t : T){
-    //   if(taskAgentMap[t] == nullptr)
-    //     unAssignedTasks.push_back(t);
-    // }
-
-    // for (auto a : A)
-    // {
-    //   if (!a->hasGoal())
-    //   {
-    //     cout << unAssignedTasks.size() << endl;
-    //     Task *t = randomChoose(unAssignedTasks, MT);
-    //     a->setGoal(a->getNode());
-    //   }
-    // }
   }
-
-  // for (auto a : A)
-  // {
-  //   if (a->hasTask()){
-  //     if(a->getTask()->getId() == 243)
-  //       cout << a->getId() << endl;
-  //     continue;
-  //   }
-  //   if (T.empty())
-  //   {
-  //     a->releaseGoalOnly();
-  //     // std::cout << "goal released " << a->getId() << " " << std::endl;
-  //   }
-  //   else
-  //   {
-  //     auto v = a->getNode();
-  //     auto itr = std::min_element(T.begin(), T.end(),
-  //                                 [v, _G](Task *t1, Task *t2)
-  //                                 {
-  //                                   return _G->dist(t1->getG()[0], v) < _G->dist(t2->getG()[0], v);
-  //                                 });
-  // this need to be modified
-  //     a->setGoal((*itr)->getG()[0]);
-  //     // map<float, pair<int, pair<int, int>>> mp;
-  //     // a->pibt_data.push_back(mp);
-  //     //a->conf = -1;
-
-  //     a->goal_count++;
-
-  //     flag = true;
-  //     //cout << a->getId() << endl;
-  //   }
-  // }
 
   return flag;
 }
 
 void PIBT_MAPD::update(bool flag)
 {
+  // prioritizing based on conflict count
   updatePriority(flag);
-  // cout << "program is running" << endl;
 
   std::vector<value_for_priority> PL(priority.size()); // priority list
   std::copy(priority.begin(), priority.end(), PL.begin());
@@ -245,9 +128,6 @@ void PIBT_MAPD::update(bool flag)
   Agents OPEN_AGENT(A.size());
   std::copy(A.begin(), A.end(), OPEN_AGENT.begin());
 
-  // choose one agent with the highest priority
-  // for (auto it : PL)
-  //   cout << it.is_in_goal << " " << it.task << " " << it.conf<< endl;
   std::chrono::system_clock::time_point st = std::chrono::high_resolution_clock::now();
 
   auto itr = std::max_element(PL.begin(), PL.end(), [this](value_for_priority a, value_for_priority b)
@@ -255,34 +135,26 @@ void PIBT_MAPD::update(bool flag)
 
   std::chrono::system_clock::time_point en = std::chrono::high_resolution_clock::now();
   P->heuristicTime += std::chrono::duration_cast<std::chrono::milliseconds>(en - st).count();
-  //cout << "max value " << (*itr).is_in_goal << " " << (*itr).task << " " << (*itr).conf<< endl;
+  
   int index = std::distance(PL.begin(), itr);
   Agent *a = OPEN_AGENT[index];
 
-  // cout << " before priority loop" << endl;
-
   while (!OPEN_AGENT.empty())
   {
-    // priorityInheritance(a, CLOSE_NODE, OPEN_AGENT, PL);
 
     /*update*/
-    // a->getNode()->getId() != a->getGoal()->getId()
-    // cout << " before if" << endl;
-    // cout << a->getNode()->getId() << " " << a->hasGoal() << endl;
+    
     /* some agents do not have any goal means they do not have any task */
     if (a->hasGoal() && (a->getNode()->getId() != a->getGoal()->getId()))
     {
-      // cout << " in PI" << endl;
       priorityInheritance(a, CLOSE_NODE, OPEN_AGENT, PL);
     }
     else
     {
-      // cout << " not in PI" << endl;
       auto itr = std::find(OPEN_AGENT.begin(), OPEN_AGENT.end(), a);
       PL.erase(PL.begin() + std::distance(OPEN_AGENT.begin(), itr));
       OPEN_AGENT.erase(itr);
     }
-    // cout << "after if" << endl;
 
     /*update*/
     std::chrono::system_clock::time_point st = std::chrono::high_resolution_clock::now();
@@ -295,8 +167,6 @@ void PIBT_MAPD::update(bool flag)
 
     index = std::distance(PL.begin(), itr);
     a = OPEN_AGENT[index];
-    // if(*itr != 0)
-    // std:: cout << "agent "<< a->getId() << " " << *itr << std::endl;
   }
 }
 
@@ -334,21 +204,6 @@ bool PIBT_MAPD::max_compare(value_for_priority a, value_for_priority b)
 
 void PIBT_MAPD::updatePriority(bool flag)
 {
-  // std::cout<<"updatePriority\n";
-  // update priority
-  // for (int i = 0; i < A.size(); ++i) {
-  //   // hasTask & not reach to goal
-  //   if (A[i]->isUpdated()) {
-  //     eta[i] = 0;
-  //   } else if (A[i]->hasTask() && (A[i]->getNode() != A[i]->getGoal())) {
-  //     eta[i] += 1;
-  //   } else {
-  //     eta[i] = 0;
-  //   }
-  //   priority[i] = eta[i] + epsilon[i];
-  //   // priority[i] = getDensity(A[i]);
-  // std::cout<<A[i]->getNode()->getId()<<"\n";
-
   // /* update */
   if (flag)
   {
@@ -357,10 +212,7 @@ void PIBT_MAPD::updatePriority(bool flag)
     {
       if(a->hasGoal())
         a->path = getShortestPath(a->getNode(), a->getGoal());
-
-      //cout << a->hasTask() << endl;
     }
-    //cout << " before priority" << endl;
 
     for (int i = 0; i < A.size(); i++)
     {
@@ -372,23 +224,12 @@ void PIBT_MAPD::updatePriority(bool flag)
           continue;
         conf += conflict_count(A[i]->path, A[j]->path);
       }
-      // bool flag = A[i]->checkRunning();
-      // priority[i] = value_for_priority{A[i]->goal_count, flag == true ? (float)conf : 0, !flag};
-
+      
       priority[i] = value_for_priority{A[i]->goal_count, (float)conf, A[i]->checkRunning(), (int)A[i]->path.size()};
 
-      // if(A[i]->conf < 0)
-      //   A[i]->pibt_data[A[i]->pibt_data.size()-1][conf] = {0, {0, 0}};
-      // else {
-      //   int cnt = A[i]->pibt_data[A[i]->pibt_data.size()-1][A[i]->conf].first;
-      //   //cout << A[i]->getId() << " " << cnt << endl;
-      //   A[i]->pibt_data[A[i]->pibt_data.size()-1][conf] = {cnt + 1, {0, 0}};
-      // }
       A[i]->conf = conf;
-      // std::cout << i << " " << priority[i] << std::endl;
+      
     }
-    // cout << " after priority" << endl;
-    // TieBreak(priority);
 
     std::chrono::system_clock::time_point en = std::chrono::high_resolution_clock::now();
     P->heuristicTime += std::chrono::duration_cast<std::chrono::milliseconds>(en - st).count();
@@ -399,57 +240,10 @@ void PIBT_MAPD::updatePriority(bool flag)
     {
       if (!A[i]->hasGoal() || A[i]->getNode() == A[i]->getGoal())
       {
-        //cout << "negative assigned" << endl;
         priority[i] = value_for_priority{A[i]->goal_count, 0, true, 0};
       }
     }
   }
-}
-
-void PIBT_MAPD::TieBreak(std::vector<float> &priority)
-{
-  map<float, bool> mp;
-  // cout << " loop begin" << endl;
-  for (int i = 0; i < priority.size(); i++)
-  {
-    // cout << i << " " << priority[i] << endl;
-    if (mp.find(priority[i]) == mp.end())
-    {
-      mp[priority[i]] = true;
-      vector<st *> vec;
-      vec.push_back(new st{i, priority[i]});
-      // int cnt = 1;
-      // cout << " loop begin" << endl;
-      for (int j = i + 1; j < priority.size(); j++)
-      {
-        if (priority[j] == priority[i])
-        {
-          // cnt ++;
-          // cout << j << " " << priority[j] << endl;
-          vec.push_back(new st{j, priority[j]});
-        }
-      }
-      // cout << " loop end" << endl;
-      if (vec.size() > 1)
-      {
-        sort(vec.begin(), vec.end(), [this](st *w1, st *w2)
-             { return compare(w1, w2); });
-        //do something
-        float lb = priority[i] - 1;
-        float offset = (float)1 / vec.size();
-        // cout << " loop begin" << endl;
-        for (int l = 0; l < vec.size(); l++)
-        {
-          // cout << vec[l]->conf << endl;
-          priority[vec[l]->ind] = lb + offset * (l + 1);
-          // cout << lb << " " << offset << " " << priority[i] << " " << priority[vec[l]->ind] << endl;
-        }
-        // cout << " loop end" << endl;
-      }
-      vec.clear();
-    }
-  }
-  // cout << " loop end" << endl;
 }
 
 float PIBT_MAPD::getDensity(Agent *a)
@@ -519,15 +313,11 @@ bool PIBT_MAPD::priorityInheritance(Agent *a,
   PL.erase(PL.begin() + std::distance(OPEN_AGENT.begin(), itr));
   OPEN_AGENT.erase(itr);
 
-  // cout << a->getId() << " " << priority[a->getId()] << endl;
 
   Node *target;
 
   if (a->getNode() == a->getGoal())
     a->visitedGoal = true;
-
-  // if(a->visitedGoal)
-  //   cout << "Goal for agent " << a->getId() << " is " << a->getGoal()->getId() << endl;
 
   // main loop
   while (!C.empty())
@@ -541,20 +331,14 @@ bool PIBT_MAPD::priorityInheritance(Agent *a,
     for (auto b : OPEN_AGENT)
     {
       if (target == b->getNode())
-      { // If there is an agent
-        // a->pibt_data[a->pibt_data.size() - 1][a->conf].second.first++;
-        // b->pibt_data[b->pibt_data.size() - 1][b->conf].second.second++;
+      { 
         P->pibt_count++;
-        // if(b->getGoal()->getId() == b->getNode()->getId()){
-        //   // std::cout << b->getId() << " is pushed by " << a->getId() << std::endl;
-        // }
+
         if (priorityInheritance(b, a, CLOSE_NODE, OPEN_AGENT, PL))
         {
           // priority inheritance success
           a->setBeforeNode(a->getNode());
           a->setNode(target);
-          // if(a->visitedGoal)
-          //   cout << "goal node" << a->getGoal()->getId() << " next node for agent " << a->getId() << " is " << target->getId() << endl;
           return true;
         }
         else
@@ -618,7 +402,6 @@ Node *PIBT_MAPD::chooseNode(Agent *a, Nodes C)
 
   if (!a->hasGoal())
   {
-    // std::cout<< "do not have goal " << a->getId() << std::endl;
     if (inArray(a->getNode(), C))
     { // try to stay
       return a->getNode();
@@ -638,10 +421,9 @@ Node *PIBT_MAPD::chooseNode(Node *v, Node *g, Nodes C, bool flag, Node *beforeNo
   Nodes cs;
   float minCost = 1000000;
   float cost;
-  //  std::cout<<"\ncanditate for "<<a->getId()<<" at "<<a->getNode()->getId()<<",beforenode "<<a->getBeforeNode()->getId()<<"\n";
+
   for (auto v : C)
   {
-    // std::cout<<v->getId()<<" cost: ";
     int v1 = v->getIndex();
     int g1 = g->getIndex();
 
@@ -652,12 +434,9 @@ Node *PIBT_MAPD::chooseNode(Node *v, Node *g, Nodes C, bool flag, Node *beforeNo
       if (v == beforeNode)
       {
         cost += 0.5;
-        //std::cout<<"0.5 added\n";
       }
     }
-    // std::cout<<cost<<",";
-    //cost = std::stoi(shortest_path_cost[g1][v1]);
-    // std::cout<<"cost : "<<cost<<" , cost2 : "<<cost2<<"\n";
+    
     if (cost < minCost)
     {
       minCost = cost;
@@ -669,7 +448,7 @@ Node *PIBT_MAPD::chooseNode(Node *v, Node *g, Nodes C, bool flag, Node *beforeNo
       cs.push_back(v);
     }
   }
-  // std::cout<<"\nmin cost "<<minCost<<"\n\n";
+
   if (cs.size() == 1)
     return cs[0];
 
